@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cambrian ICT Club Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .animate-pulse-custom {
+            animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #8b5cf6, #ec4899);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .nav-item.active {
+            background: rgba(124, 58, 237, 0.1);
+            border-left: 3px solid #8b5cf6;
+        }
+        .smooth-transition {
+            transition: all 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen font-sans">
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="fixed inset-0 bg-gray-900 bg-opacity-90 flex flex-col items-center justify-center z-50 hidden">
+        <div class="flex flex-col items-center">
+            <div class="h-20 w-20 mb-4 rounded-full bg-gradient-to-r from-purple-600 to-pink-500 flex items-center justify-center animate-spin">
+                <i class="fas fa-laptop-code text-white text-2xl"></i>
+            </div>
+            <div class="text-white text-xl font-semibold mb-2">Loading Portal</div>
+            <div class="w-64 bg-gray-700 rounded-full h-2">
+                <div id="loading-progress" class="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Container -->
+    <div id="login-container" class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-gray-800 p-8 rounded-xl shadow-2xl w-full max-w-md border border-gray-700">
+            <div class="flex justify-center mb-6">
+                <div class="h-16 w-16 rounded-xl bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center">
+                    <i class="fas fa-laptop-code text-white text-2xl"></i>
+                </div>
+            </div>
+            <h2 class="text-3xl font-bold text-center mb-2 gradient-text">Cambrian ICT Club</h2>
+            <p class="text-gray-400 text-center mb-8">Sign in to access the club portal</p>
+            
+            <div id="message" class="hidden mb-4"></div>
+            
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-300 mb-2">College Email</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-envelope text-gray-400"></i>
+                        </div>
+                        <input type="email" id="email" placeholder="student@cambrian.edu"
+                               class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 border border-gray-600 focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-300 mb-2">Password</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-lock text-gray-400"></i>
+                        </div>
+                        <input type="password" id="password" placeholder="••••••••"
+                               class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 border border-gray-600 focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <button type="button" id="toggle-password" class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                            <i class="fas fa-eye-slash text-gray-400 hover:text-gray-300"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input type="checkbox" id="remember-me" class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-600 rounded bg-gray-700">
+                        <label for="remember-me" class="ml-2 block text-sm text-gray-300">Remember me</label>
+                    </div>
+                    <a href="#" class="text-sm text-purple-400 hover:text-purple-300">Forgot password?</a>
+                </div>
+                
+                <div class="pt-2">
+                    <div class="flex justify-between text-xs text-gray-400 mb-1">
+                        <span>Password Strength</span>
+                        <span id="strength-text">Weak</span>
+                    </div>
+                    <div class="w-full bg-gray-700 h-2 rounded-full mb-4">
+                        <div id="strength-fill" class="h-2 rounded-full w-0 transition-all duration-300"></div>
+                    </div>
+                </div>
+                
+                <button type="button" onclick="login()" class="w-full bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white px-4 py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-800">
+                    Sign In
+                </button>
+            </form>
+            
+            <div class="mt-6 text-center text-sm text-gray-400">
+                New to ICT Club? <a href="#" class="text-purple-400 hover:text-purple-300 font-medium">Register here</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Section -->
+    <div id="dashboard" class="hidden min-h-screen flex flex-col">
+        <!-- Mobile Menu Button -->
+        <div class="lg:hidden fixed top-4 right-4 z-40">
+            <button id="mobile-menu-button" class="p-2 rounded-md bg-gray-800 text-gray-400 hover:text-white focus:outline-none">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Sidebar -->
+        <div id="sidebar" class="fixed inset-y-0 left-0 transform -translate-x-full lg:translate-x-0 w-64 bg-gray-800 border-r border-gray-700 z-30 transition-transform duration-300 ease-in-out">
+            <div class="flex items-center justify-center h-16 px-4 border-b border-gray-700">
+                <div class="flex items-center">
+                    <div class="h-10 w-10 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center">
+                        <i class="fas fa-laptop-code text-white"></i>
+                    </div>
+                    <span class="ml-3 font-bold text-xl">ICT Club</span>
+                </div>
+            </div>
+            <div class="px-4 py-6">
+                <div class="flex items-center px-4 py-3 bg-gray-700 rounded-lg mb-6">
+                    <div class="h-10 w-10 rounded-full bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center">
+                        <i class="fas fa-user text-white"></i>
+                    </div>
+                    <div class="ml-3">
+                        <div class="text-sm font-medium text-white" id="user-name">Guest</div>
+                        <div class="text-xs text-gray-400">Member</div>
+                    </div>
+                </div>
+                
+                <nav class="space-y-1">
+                    <a href="#" onclick="showSection('dashboard-content')" class="nav-item active flex items-center px-4 py-3 text-sm font-medium rounded-md text-white bg-gray-700">
+                        <i class="fas fa-home mr-3 text-purple-400"></i>
+                        Dashboard
+                    </a>
+                    <a href="#" onclick="showSection('info-section')" class="nav-item flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-300 hover:text-white hover:bg-gray-700">
+                        <i class="fas fa-info-circle mr-3 text-blue-400"></i>
+                        Club Info
+                    </a>
+                    <a href="#" onclick="showSection('news-section')" class="nav-item flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-300 hover:text-white hover:bg-gray-700">
+                        <i class="fas fa-newspaper mr-3 text-green-400"></i>
+                        News & Events
+                    </a>
+                    <a href="#" onclick="showSection('voting-section')" class="nav-item flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-300 hover:text-white hover:bg-gray-700">
+                        <i class="fas fa-vote-yea mr-3 text-yellow-400"></i>
+                        Voting
+                    </a>
+                    <a href="#" onclick="showSection('resources-section')" class="nav-item flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-300 hover:text-white hover:bg-gray-700">
+                        <i class="fas fa-book mr-3 text-indigo-400"></i>
+                        Resources
+                    </a>
+                    <a href="#" onclick="showSection('members-section')" class="nav-item flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-300 hover:text-white hover:bg-gray-700">
+                        <i class="fas fa-users mr-3 text-pink-400"></i>
+                        Members
+                    </a>
+                </nav>
+            </div>
+            
+            <div class="absolute bottom-0 w-full px-4 py-4 border-t border-gray-700">
+                <button onclick="logout()" class="w-full flex items-center justify-center px-4 py-2 text-sm font-medium rounded-md text-gray-300 hover:text-white hover:bg-gray-700">
+                    <i class="fas fa-sign-out-alt mr-2"></i>
+                    Sign Out
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="lg:ml-64 flex-1 flex flex-col">
+            <!-- Top Bar -->
+            <div class="bg-gray-800 border-b border-gray-700 p-4 flex items-center justify-between">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-semibold text-white" id="page-title">Dashboard</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="p-2 rounded-full bg-gray-700 text-gray-400 hover:text-white focus:outline-none">
+                        <i class="fas fa-bell"></i>
+                        <span class="sr-only">Notifications</span>
+                    </button>
+                    <button class="p-2 rounded-full bg-gray-700 text-gray-400 hover:text-white focus:outline-none">
+                        <i class="fas fa-envelope"></i>
+                        <span class="sr-only">Messages</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div id="dashboard-content" class="flex-1 bg-gradient-to-b from-gray-900 to-gray-800 p-6">
+                <div class="max-w-7xl mx-auto">
+                    <!-- Welcome Banner -->
+                    <div class="bg-gradient-to-r from-purple-900 to-blue-900 rounded-xl p-6 mb-8 shadow-lg">
+                        <div class="flex flex-col md:flex-row items-center justify-between">
+                            <div class="mb-4 md:mb-0">
+                                <h2 class="text-2xl font-bold text-white mb-2">Welcome back, <span id="user-greeting" class="gradient-text">Member</span>!</h2>
+                                <p class="text-gray-300">Check out the latest updates and activities from your ICT Club</p>
+                            </div>
+                            <button class="bg-white bg-opacity-10 hover:bg-opacity-20 text-white px-6 py-2 rounded-lg font-medium transition-all duration-300 border border-white border-opacity-20">
+                                View Calendar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-gray-800 rounded-xl p-6 border border-gray-700 card-hover smooth-transition">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-lg bg-purple-500 bg-opacity-20 text-purple-400 mr-4">
+                                    <i class="fas fa-calendar-alt text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-400">Upcoming Events</p>
+                                    <h3 class="text-2xl font-bold text-white">5</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-800 rounded-xl p-6 border border-gray-700 card-hover smooth-transition">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-lg bg-blue-500 bg-opacity-20 text-blue-400 mr-4">
+                                    <i class="fas fa-users text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-400">Active Members</p>
+                                    <h3 class="text-2xl font-bold text-white">127</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-800 rounded-xl p-6 border border-gray-700 card-hover smooth-transition">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-lg bg-green-500 bg-opacity-20 text-green-400 mr-4">
+                                    <i class="fas fa-trophy text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-400">Achievements</p>
+                                    <h3 class="text-2xl font-bold text-white">12</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-800 rounded-xl p-6 border border-gray-700 card-hover smooth-transition">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-lg bg-yellow-500 bg-opacity-20 text-yellow-400 mr-4">
+                                    <i class="fas fa-file-alt text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-400">Resources</p>
+                                    <h3 class="text-2xl font-bold text-white">24</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activities -->
+                    <div class="bg-gray-800 rounded-xl p-6 border border-gray-700 mb-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-xl font-semibold text-white">Recent Activities</h2>
+                            <button class="text-sm text-purple-400 hover:text-purple-300">View All</button>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-start p-4 hover:bg-gray-700 rounded-lg transition-colors duration-200">
+                                <div class="flex-shrink-0">
+                                    <div class="h-10 w-10 rounded-full bg-indigo-500 flex items-center justify-center">
+                                        <i class="fas fa-bullhorn text-white"></i>
+                                    </div>
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <p class="text-sm font-medium text-white">Bangabandhu</p>
+                                        <span class="text-xs text-gray-400">2h ago</span>
+                                    </div>
+                                    <p class="text-sm text-gray-300 mt-1">Posted a new announcement about the upcoming hackathon.</p>
+                                    <div class="mt-2 flex space-x-2">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-900 text-indigo-200">Announcement</span>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-700 text-gray-300">Hackathon</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start p-4 hover:bg-gray-700 rounded-lg transition-colors duration-200">
+                                <div class="flex-shrink-0">
+                                    <div class="h-10 w-10 rounded-full bg-green-500 flex items-center justify-center">
+                                        <i class="fas fa-file-upload text-white"></i>
+                                    </div>
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <p class="text-sm font-medium text-white">Dr. Yusuf</p>
+                                        <span class="text-xs text-gray-400">5h ago</span>
+                                    </div>
+                                    <p class="text-sm text-gray-300 mt-1">Uploaded new resources for the Python workshop.</p>
+                                    <div class="mt-2 flex space-x-2">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-900 text-green-200">Resource</span>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-700 text-gray-300">Python</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start p-4 hover:bg-gray-700 rounded-lg transition-colors duration-200">
+                                <div class="flex-shrink-0">
+                                    <div class="h-10 w-10 rounded-full bg-purple-500 flex items-center justify-center">
+                                        <i class="fas fa-calendar-check text-white"></i>
+                                    </div>
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <p class="text-sm font-medium text-white">Tech Sigmas  😈</p>
+                                        <span class="text-xs text-gray-400">1d ago</span>
+                                    </div>
+                                    <p class="text-sm text-gray-300 mt-1">Scheduled maintenance for the club servers (which is never gonna happen btw).</p>
+                                    <div class="mt-2 flex space-x-2">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-900 text-purple-200">Maintenance</span>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-700 text-gray-300">Servers</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upcoming Events -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                            <div class="flex items-center justify-between mb-6">
+                                <h2 class="text-xl font-semibold text-white">Upcoming Events</h2>
+                                <button class="text-sm text-purple-400 hover:text-purple-300">View Calendar</button>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="p-4 bg-gray-700 rounded-lg">
+                                    <div class="flex items-start">
+                                        <div class="bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg p-3 mr-4 text-center">
+                                            <div class="text-white font-bold text-lg">15</div>
+                                            <div class="text-white text-xs">JUN</div>
+                                        </div>
+                                        <div class="flex-1">
+                                            <h3 class="text-sm font-medium text-white">Hackathon 2023</h3>
+                                            <p class="text-xs text-gray-400 mt-1">9:00 AM - 5:00 PM</p>
+                                            <div class="mt-2 flex items-center text-xs text-gray-400">
+                                                <i class="fas fa-map-marker-alt mr-1"></i>
+                                                <span>Main Campus, Room 205</span>
+                                            </div>
+                                        </div>
+                                        <button class="text-xs text-purple-400 hover:text-purple-300">Details</button>
+                                    </div>
+                                </div>
+                                <div class="p-4 bg-gray-700 rounded-lg">
+                                    <div class="flex items-start">
+                                        <div class="bg-gradient-to-br from-green-500 to-teal-500 rounded-lg p-3 mr-4 text-center">
+                                            <div class="text-white font-bold text-lg">22</div>
+                                            <div class="text-white text-xs">JUN</div>
+                                        </div>
+                                        <div class="flex-1">
+                                            <h3 class="text-sm font-medium text-white">Python Workshop</h3>
+                                            <p class="text-xs text-gray-400 mt-1">2:00 PM - 4:00 PM</p>
+                                            <div class="mt-2 flex items-center text-xs text-gray-400">
+                                                <i class="fas fa-map-marker-alt mr-1"></i>
+                                                <span>Computer Lab 3</span>
+                                            </div>
+                                        </div>
+                                        <button class="text-xs text-purple-400 hover:text-purple-300">Details</button>
+                                    </div>
+                                </div>
+                                <div class="p-4 bg-gray-700 rounded-lg">
+                                    <div class="flex items-start">
+                                        <div class="bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg p-3 mr-4 text-center">
+                                            <div class="text-white font-bold text-lg">30</div>
+                                            <div class="text-white text-xs">JUN</div>
+                                        </div>
+                                        <div class="flex-1">
+                                            <h3 class="text-sm font-medium text-white">Guest Speaker: AI Trends</h3>
+                                            <p class="text-xs text-gray-400 mt-1">11:00 AM - 12:30 PM</p>
+                                            <div class="mt-2 flex items-center text-xs text-gray-400">
+                                                <i class="fas fa-map-marker-alt mr-1"></i>
+                                                <span>Auditorium</span>
+                                            </div>
+                                        </div>
+                                        <button class="text-xs text-purple-400 hover:text-purple-300">Details</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Links -->
+                        <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                            <h2 class="text-xl font-semibold text-white mb-6">Quick Links</h2>
+                            <div class="grid grid-cols-2 gap-4">
+                                <a href="#" class="p-4 bg-gray-700 rounded-lg flex flex-col items-center justify-center hover:bg-gray-600 transition-colors duration-200">
+                                    <div class="h-10 w-10 rounded-full bg-purple-500 bg-opacity-20 text-purple-400 flex items-center justify-center mb-2">
+                                        <i class="fas fa-file-alt"></i>
+                                    </div>
+                                    <span class="text-sm font-medium text-white text-center">Resources</span>
+                                </a>
+                                <a href="#" class="p-4 bg-gray-700 rounded-lg flex flex-col items-center justify-center hover:bg-gray-600 transition-colors duration-200">
+                                    <div class="h-10 w-10 rounded-full bg-blue-500 bg-opacity-20 text-blue-400 flex items-center justify-center mb-2">
+                                        <i class="fas fa-calendar"></i>
+                                    </div>
+                                    <span class="text-sm font-medium text-white text-center">Events</span>
+                                </a>
+                                <a href="#" class="p-4 bg-gray-700 rounded-lg flex flex-col items-center justify-center hover:bg-gray-600 transition-colors duration-200">
+                                    <div class="h-10 w-10 rounded-full bg-green-500 bg-opacity-20 text-green-400 flex items-center justify-center mb-2">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <span class="text-sm font-medium text-white text-center">Members</span>
+                                </a>
+                                <a href="#" class="p-4 bg-gray-700 rounded-lg flex flex-col items-center justify-center hover:bg-gray-600 transition-colors duration-200">
+                                    <div class="h-10 w-10 rounded-full bg-yellow-500 bg-opacity-20 text-yellow-400 flex items-center justify-center mb-2">
+                                        <i class="fas fa-trophy"></i>
+                                    </div>
+                                    <span class="text-sm font-medium text-white text-center">Achievements</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Section -->
+            <div id="info-section" class="hidden flex-1 bg-gradient-to-b from-gray-900 to-gray-800 p-6">
+                <div class="max-w-7xl mx-auto">
+                    <h1 class="text-3xl font-bold text-white mb-2">About Our Club</h1>
+                    <p class="text-gray-400 mb-8">Learn more about Cambrian ICT Club and our team</p>
+
+                    <!-- About Cambrian -->
+                    <div class="card p-6 mb-8 bg-gray-800 rounded-xl border border-gray-700 card-hover smooth-transition">
+                        <h2 class="text-2xl font-semibold text-white mb-4">About Cambrian College</h2>
+                        <div class="flex flex-col md:flex-row gap-6">
+                            <div class="flex-1">
+                                <p class="text-gray-300 mb-4">
+                                    Cambrian College is a dynamic institution located in Sudbury, Ontario, offering a wide range of programs 
+                                    designed to meet the evolving needs of students and industry. With a focus on hands-on learning and 
+                                    real-world experience, Cambrian prepares students for successful careers in various fields.
+                                </p>
+                                <p class="text-gray-300">
+                                    The college is known for its supportive learning environment, experienced faculty, and modern facilities 
+                                    that foster innovation and creativity.
+                                </p>
+                            </div>
+                            <div class="md:w-1/3">
+                                <div class="bg-gray-700 rounded-lg h-full flex items-center justify-center p-4">
+                                    <img src="https://www.cambriancollege.ca/wp-content/uploads/2020/03/Cambrian-College-Sudbury.jpg" alt="Cambrian College" class="rounded-lg object-cover h-full w-full">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- About ICT Club -->
+                    <div class="card p-6 mb-8 bg-gray-800 rounded-xl border border-gray-700 card-hover smooth-transition">
+                        <h2 class="text-2xl font-semibold text-white mb-4">About ICT Club</h2>
+                        <div class="flex flex-col md:flex-row gap-6">
+                            <div class="md:w-1/3">
+                                <div class="bg-gray-700 rounded-lg h-full flex items-center justify-center p-4">
+                                    <i class="fas fa-laptop-code text-6xl text-purple-400"></i>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-gray-300 mb-4">
+                                    The Cambrian ICT Club is a student-run organization dedicated to fostering interest and skills in 
+                                    Information and Communication Technology. We provide a platform for students to explore, learn, and 
+                                    collaborate on various technology projects.
+                                </p>
+                                <p class="text-gray-300">
+                                    Our club organizes workshops, coding competitions, guest lectures, and networking events to help 
+                                    students enhance their technical skills and build professional connections in the tech industry.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Committee Members -->
+                    <div class="card p-6 mb-8 bg-gray-800 rounded-xl border border-gray-700">
+                        <h2 class="text-2xl font-semibold text-white mb-6">Club Committee</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div class="member-card p-6 flex flex-col items-center bg-gray-700 rounded-lg border border-gray-600 hover:border-purple-500 transition-all duration-300">
+                                <div class="h-24 w-24 rounded-full bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center mb-4">
+                                    <i class="fas fa-user text-white text-3xl"></i>
+                                </div>
+                                <h3 class="font-bold text-white text-lg">Alice Johnson</h3>
+                                <p class="text-purple-400 text-sm mb-2">President</p>
+                                <p class="text-gray-400 text-xs text-center">Computer Science Senior</p>
+                                <div class="mt-3 flex space-x-2">
+                                    <a href="#" class="text-gray-400 hover:text-blue-400"><i class="fab fa-linkedin"></i></a>
+                                    <a href="#" class="text-gray-400 hover:text-purple-400"><i class="fab fa-github"></i></a>
+                                    <a href="#" class="text-gray-400 hover:text-blue-500"><i class="fab fa-twitter"></i></a>
+                                </div>
+                            </div>
+                            <div class="member-card p-6 flex flex-col items-center bg-gray-700 rounded-lg border border-gray-600 hover:border-red-500 transition-all duration-300">
+                                <div class="h-24 w-24 rounded-full bg-gradient-to-br from-red-500 to-pink-500 flex items-center justify-center mb-4">
+                                    <i class="fas fa-user text-white text-3xl"></i>
+                                </div>
+                                <h3 class="font-bold text-white text-lg">Brian Lee</h3>
+                                <p class="text-purple-400 text-sm mb-2">Vice President</p>
+                                <p class="text-gray-400 text-xs text-center">IT Specialist</p>
+                                <div class="mt-3 flex space-x-2">
+                                    <a href="#" class="text-gray-400 hover:text-blue-400"><i class="fab fa-linkedin"></i></a>
+                                    <a href="#" class="text-gray-400 hover:text-purple-400"><i class="fab fa-github"></i></a>
+                                </div>
+                            </div>
+                            <div class="member-card p-6 flex flex-col items-center bg-gray-700 rounded-lg border border-gray-600 hover:border-teal-500 transition-all duration-300">
+                                <div class="h-24 w-24 rounded-full bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center mb-4">
+                                    <i class="fas fa-user text-white text-3xl"></i>
+                                </div>
+                                <h3 class="font-bold text-white text-lg">Clara Wang</h3>
+                                <p class="text-purple-400 text-sm mb-2">Secretary</p>
+                                <p class="text-gray-400 text-xs text-center">Data Science Enthusiast</p>
+                                <div class="mt-3 flex space-x-2">
+                                    <a href="#" class="text-gray-400 hover:text-blue-400"><i class="fab fa-linkedin"></i></a>
+                                    <a href="#" class="text-gray-400 hover:text-purple-400"><i class="fab fa-github"></i></a>
+                                </div>
+                            </div>
+                            <div class="member-card p-6 flex flex-col items-center bg-gray-700 rounded-lg border border-gray-600 hover:border-green-500 transition-all duration-300">
+                                <div class="h-24 w-24 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center mb-4">
+                                    <i class="fas fa-user text-white text-3xl"></i>
+                                </div>
+                                <h3 class="font-bold text-white text-lg">David Kim</h3>
+                                <p class="text-purple-400 text-sm mb-2">Treasurer</p>
+                                <p class="text-gray-400 text-xs text-center">Finance & Tech</p>
+                                <div class="mt-3 flex space-x-2">
+                                    <a href="#" class="text-gray-400 hover:text-blue-400"><i class="fab fa-linkedin"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Coding Team -->
+                    <div class="card p-6 bg-gray-800 rounded-xl border border-gray-700">
+                        <h2 class="text-2xl font-semibold text-white mb-6">Our Coding Team</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div class="member-card p-4 flex items-center bg-gray-700 rounded-lg border border-gray-600 hover:border-yellow-500 transition-all duration-300">
+                                <div class="h-12 w-12 rounded-full bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center mr-3">
+                                    <i class="fas fa-code text-white"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-white">Sarah Kim</h3>
+                                    <p class="text-gray-400 text-xs">Web Development</p>
+                                    <div class="mt-1 flex space-x-1">
+                                        <span class="inline-block h-2 w-2 rounded-full bg-yellow-500"></span>
+                                        <span class="text-xs text-gray-400">Active</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="member-card p-4 flex items-center bg-gray-700 rounded-lg border border-gray-600 hover:border-red-500 transition-all duration-300">
+                                <div class="h-12 w-12 rounded-full bg-gradient-to-br from-red-500 to-pink-500 flex items-center justify-center mr-3">
+                                    <i class="fas fa-code text-white"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-white">James Wilson</h3>
+                                    <p class="text-gray-400 text-xs">Mobile Apps</p>
+                                    <div class="mt-1 flex space-x-1">
+                                        <span class="inline-block h-2 w-2 rounded-full bg-green-500"></span>
+                                        <span class="text-xs text-gray-400">Active</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="member-card p-4 flex items-center bg-gray-700 rounded-lg border border-gray-600 hover:border-teal-500 transition-all duration-300">
+                                <div class="h-12 w-12 rounded-full bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center mr-3">
+                                    <i class="fas fa-code text-white"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-white">Emma Thompson</h3>
+                                    <p class="text-gray-400 text-xs">Data Science</p>
+                                    <div class="mt-1 flex space-x-1">
+                                        <span class="inline-block h-2 w-2 rounded-full bg-yellow-500"></span>
+                                        <span class="text-xs text-gray-400">Active</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="member-card p-4 flex items-center bg-gray-700 rounded-lg border border-gray-600 hover:border-blue-500 transition-all duration-300">
+                                <div class="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center mr-3">
+                                    <i class="fas fa-code text-white"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-white">Michael Chen</h3>
+                                    <p class="text-gray-400 text-xs">Cybersecurity</p>
+                                    <div class="mt-1 flex space-x-1">
+                                        <span class="inline-block h-2 w-2 rounded-full bg-green-500"></span>
+                                        <span class="text-xs text-gray-400">Active</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- News Section -->
+            <div id="news-section" class="hidden flex-1 bg-gradient-to-b from-gray-900 to-gray-800 p-6">
+                <div class="max-w-7xl mx-auto">
+                    <h1 class="text-3xl font-bold text-white mb-2">Club News & Achievements</h1>
+                    <p class="text-gray-400 mb-8">Celebrating our milestones and accomplishments</p>
+
+                    <!-- Achievement Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="achievement-card p-6 bg-gray-800 rounded-xl border border-gray-700 hover:border-yellow-500 transition-all duration-300">
+                            <div class="flex items-start mb-4">
+                                <div class="p-3 rounded-xl bg-yellow-500 bg-opacity-20 text-yellow-400 mr-4">
+                                    <i class="fas fa-trophy text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-semibold text-white">Regional Coding Championship</h3>
+                                    <p class="text-gray-400 text-sm">Won 1st Place - 2023</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-300 mb-4">
+                                Our team secured the first position in the Regional Coding Championship, competing against 25 other colleges.
+                                The team demonstrated exceptional problem-solving skills and coding expertise.
+                            </p>
+                            <div class="flex items-center text-sm text-gray-400">
+                                <i class="fas fa-calendar-alt mr-2"></i>
+                                <span>March 15, 2023</span>
+                            </div>
+                        </div>
+
+                        <div class="achievement-card p-6 bg-gray-800 rounded-xl border border-gray-700 hover:border-green-500 transition-all duration-300">
+                            <div class="flex items-start mb-4">
+                                <div class="p-3 rounded-xl bg-green-500 bg-opacity-20 text-green-400 mr-4">
+                                    <i class="fas fa-award text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-semibold text-white">Innovation Award</h3>
+                                    <p class="text-gray-400 text-sm">Best Student Project - 2022</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-300 mb-4">
+                                Our club project "Campus Connect" won the Innovation Award at the Annual Student Tech Fair for its 
+                                creative approach to improving campus communication.
+                            </p>
+                            <div class="flex items-center text-sm text-gray-400">
+                                <i class="fas fa-calendar-alt mr-2"></i>
+                                <span>November 8, 2022</span>
+                            </div>
+                        </div>
+
+                        <div class="achievement-card p-6 bg-gray-800 rounded-xl border border-gray-700 hover:border-blue-500 transition-all duration-300">
+                            <div class="flex items-start mb-4">
+                                <div class="p-3 rounded-xl bg-blue-500 bg-opacity-20 text-blue-400 mr-4">
+                                    <i class="fas fa-medal text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-semibold text-white">Community Service Recognition</h3>
+                                    <p class="text-gray-400 text-sm">Outstanding Contribution - 2022</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-300 mb-4">
+                                Recognized by Cambrian College for our volunteer work in teaching basic computer skills to senior citizens 
+                                in the local community.
+                            </p>
+                            <div class="flex items-center text-sm text-gray-400">
+                                <i class="fas fa-calendar-alt mr-2"></i>
+                                <span>September 20, 2022</span>
+                            </div>
+                        </div>
+
+                        <div class="achievement-card p-6 bg-gray-800 rounded-xl border border-gray-700 hover:border-purple-500 transition-all duration-300">
+                            <div class="flex items-start mb-4">
+                                <div class="p-3 rounded-xl bg-purple-500 bg-opacity-20 text-purple-400 mr-4">
+                                    <i class="fas fa-certificate text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-semibold text-white">Workshop Excellence</h3>
+                                    <p class="text-gray-400 text-sm">Highest Attendance - 2023</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-300 mb-4">
+                                Our "Introduction to Web Development" workshop achieved the highest attendance record with over 120 participants 
+                                from various programs across the college.
+                            </p>
+                            <div class="flex items-center text-sm text-gray-400">
+                                <i class="fas fa-calendar-alt mr-2"></i>
+                                <span>January 30, 2023</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Achievements -->
+                    <div class="card p-6 bg-gray-800 rounded-xl border border-gray-700">
+                        <h2 class="text-2xl font-semibold text-white mb-6">More Accomplishments</h2>
+                        <div class="space-y-4">
+                            <div class="flex items-start p-4 border-b border-gray-700 hover:bg-gray-700 rounded-lg transition-colors duration-200">
+                                <div class="h-4 w-4 rounded-full bg-indigo-500 mt-1 mr-3 flex-shrink-0"></div>
+                                <div>
+                                    <h3 class="font-medium text-white">Published Research Paper</h3>
+                                    <p class="text-gray-400 text-sm mt-1">
+                                        Two senior members published a research paper on "AI Applications in Education" in the 
+                                        International Journal of Educational Technology.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex items-start p-4 border-b border-gray-700 hover:bg-gray-700 rounded-lg transition-colors duration-200">
+                                <div class="h-4 w-4 rounded-full bg-indigo-500 mt-1 mr-3 flex-shrink-0"></div>
+                                <div>
+                                    <h3 class="font-medium text-white">Industry Partnership</h3>
+                                    <p class="text-gray-400 text-sm mt-1">
+                                        Established a partnership with TechCorp Inc. for internship opportunities and guest lectures.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex items-start p-4 border-b border-gray-700 hover:bg-gray-700 rounded-lg transition-colors duration-200">
+                                <div class="h-4 w-4 rounded-full bg-indigo-500 mt-1 mr-3 flex-shrink-0"></div>
+                                <div>
+                                    <h3 class="font-medium text-white">Club Growth</h3>
+                                    <p class="text-gray-400 text-sm mt-1">
+                                        Expanded membership by 150% in the last academic year, becoming the largest technical club on campus.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex items-start p-4 hover:bg-gray-700 rounded-lg transition-colors duration-200">
+                                <div class="h-4 w-4 rounded-full bg-indigo-500 mt-1 mr-3 flex-shrink-0"></div>
+                                <div>
+                                    <h3 class="font-medium text-white">Hackathon Success</h3>
+                                    <p class="text-gray-400 text-sm mt-1">
+                                        Three teams from our club placed in the top 10 at the National Student Hackathon 2023.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Voting Section -->
+            <div id="voting-section" class="hidden flex-1 bg-gradient-to-b from-gray-900 to-gray-800 p-6">
+                <div class="max-w-7xl mx-auto">
+                    <h1 class="text-3xl font-bold text-white mb-2">Voting Center</h1>
+                    <p class="text-gray-400 mb-8">Participate in club decisions and elections</p>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Active Polls -->
+                        <div class="voting-card p-6 bg-gray-800 rounded-xl border border-gray-700">
+                            <h3 class="text-xl font-semibold text-white mb-4">Active Polls</h3>
+                            <div class="space-y-4">
+                                <div class="border border-gray-700 rounded-lg p-4 hover:border-purple-500 transition-colors duration-200">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h4 class="font-medium text-white">Next Club President Election</h4>
+                                        <span class="text-xs bg-purple-900 text-purple-200 px-2 py-1 rounded-full">3 days left</span>
+                                    </div>
+                                    <p class="text-sm text-gray-400 mb-3">Vote for your preferred candidate</p>
+                                    <div class="space-y-2">
+                                        <label class="flex items-center p-2 rounded-lg bg-gray-700 hover:bg-gray-600 cursor-pointer transition-colors duration-200">
+                                            <input type="radio" name="president" class="h-4 w-4 text-purple-500 focus:ring-purple-400 border-gray-600 bg-gray-700">
+                                            <div class="ml-3">
+                                                <span class="block text-gray-300">Alex Johnson</span>
+                                                <span class="block text-xs text-gray-500">"Focus on advanced workshops"</span>
+                                            </div>
+                                        </label>
+                                        <label class="flex items-center p-2 rounded-lg bg-gray-700 hover:bg-gray-600 cursor-pointer transition-colors duration-200">
+                                            <input type="radio" name="president" class="h-4 w-4 text-purple-500 focus:ring-purple-400 border-gray-600 bg-gray-700">
+                                            <div class="ml-3">
+                                                <span class="block text-gray-300">Maria Garcia</span>
+                                                <span class="block text-xs text-gray-500">"More industry connections"</span>
+                                            </div>
+                                        </label>
+                                        <label class="flex items-center p-2 rounded-lg bg-gray-700 hover:bg-gray-600 cursor-pointer transition-colors duration-200">
+                                            <input type="radio" name="president" class="h-4 w-4 text-purple-500 focus:ring-purple-400 border-gray-600 bg-gray-700">
+                                            <div class="ml-3">
+                                                <span class="block text-gray-300">Sam Wilson</span>
+                                                <span class="block text-xs text-gray-500">"Community projects focus"</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="mt-4">
+                                        <label for="campus-id" class="block text-sm font-medium text-gray-300 mb-2">Campus ID</label>
+                                        <input type="text" id="campus-id" placeholder="e.g., CJ6E000 or CSSCE2025000"
+                                               class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 border border-gray-600 focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                    </div>
+                                    <button class="mt-4 w-full bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300">
+                                        Submit Vote
+                                    </button>
+                                </div>
+
+                                <div class="border border-gray-700 rounded-lg p-4 hover:border-purple-500 transition-colors duration-200">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h4 class="font-medium text-white">Workshop Preference</h4>
+                                        <span class="text-xs bg-blue-900 text-blue-200 px-2 py-1 rounded-full">1 week left</span>
+                                    </div>
+                                    <p class="text-sm text-gray-400 mb-3">Choose next month's topic</p>
+                                    <div class="space-y-2">
+                                        <label class="flex items-center p-2 rounded-lg bg-gray-700 hover:bg-gray-600 cursor-pointer transition-colors duration-200">
+                                            <input type="radio" name="workshop" class="h-4 w-4 text-purple-500 focus:ring-purple-400 border-gray-600 bg-gray-700">
+                                            <div class="ml-3">
+                                                <span class="block text-gray-300">Machine Learning</span>
+                                                <span class="block text-xs text-gray-500">Intro to AI and ML concepts</span>
+                                            </div>
+                                        </label>
+                                        <label class="flex items-center p-2 rounded-lg bg-gray-700 hover:bg-gray-600 cursor-pointer transition-colors duration-200">
+                                            <input type="radio" name="workshop" class="h-4 w-4 text-purple-500 focus:ring-purple-400 border-gray-600 bg-gray-700">
+                                            <div class="ml-3">
+                                                <span class="block text-gray-300">Cybersecurity</span>
+                                                <span class="block text-xs text-gray-500">Ethical hacking basics</span>
+                                            </div>
+                                        </label>
+                                        <label class="flex items-center p-2 rounded-lg bg-gray-700 hover:bg-gray-600 cursor-pointer transition-colors duration-200">
+                                            <input type="radio" name="workshop" class="h-4 w-4 text-purple-500 focus:ring-purple-400 border-gray-600 bg-gray-700">
+                                            <div class="ml-3">
+                                                <span class="block text-gray-300">Mobile Development</span>
+                                                <span class="block text-xs text-gray-500">Building cross-platform apps</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="mt-4">
+                                        <label for="campus-id2" class="block text-sm font-medium text-gray-300 mb-2">Campus ID</label>
+                                        <input type="text" id="campus-id2" placeholder="e.g., CJ6E000 or CSSCE2025000"
+                                               class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 border border-gray-600 focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                    </div>
+                                    <button class="mt-4 w-full bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300">
+                                        Submit Vote
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Voting History -->
+                        <div class="voting-card p-6 bg-gray-800 rounded-xl border border-gray-700">
+                            <h3 class="text-xl font-semibold text-white mb-4">Voting History</h3>
+                            <div class="space-y-4">
+                                <div class="border border-gray-700 rounded-lg p-4 hover:border-purple-500 transition-colors duration-200">
+                                    <h4 class="font-medium text-white">Fall Event Theme</h4>
+                                    <p class="text-sm text-gray-400 mt-1">Voted: Hackathon (65%)</p>
+                                    <div class="mt-3 w-full bg-gray-700 rounded-full h-2">
+                                        <div class="bg-green-500 h-2 rounded-full" style="width: 65%"></div>
+                                    </div>
+                                    <div class="flex justify-between text-xs text-gray-400 mt-1">
+                                        <span>Hackathon</span>
+                                        <span>Coding Competition</span>
+                                    </div>
+                                    <div class="mt-3 text-xs text-gray-500">
+                                        <i class="fas fa-check-circle text-green-500 mr-1"></i>
+                                        You voted for: Hackathon
+                                    </div>
+                                </div>
+
+                                <div class="border border-gray-700 rounded-lg p-4 hover:border-purple-500 transition-colors duration-200">
+                                    <h4 class="font-medium text-white">T-Shirt Design</h4>
+                                    <p class="text-sm text-gray-400 mt-1">Voted: Design B (55%)</p>
+                                    <div class="mt-3 w-full bg-gray-700 rounded-full h-2">
+                                        <div class="bg-blue-500 h-2 rounded-full" style="width: 55%"></div>
+                                    </div>
+                                    <div class="flex justify-between text-xs text-gray-400 mt-1">
+                                        <span>Design B</span>
+                                        <span>Design A</span>
+                                    </div>
+                                    <div class="mt-3 text-xs text-gray-500">
+                                        <i class="fas fa-check-circle text-green-500 mr-1"></i>
+                                        You voted for: Design B
+                                    </div>
+                                </div>
+
+                                <div class="border border-gray-700 rounded-lg p-4 hover:border-purple-500 transition-colors duration-200">
+                                    <h4 class="font-medium text-white">Meeting Schedule</h4>
+                                    <p class="text-sm text-gray-400 mt-1">Voted: Fridays (70%)</p>
+                                    <div class="mt-3 w-full bg-gray-700 rounded-full h-2">
+                                        <div class="bg-purple-500 h-2 rounded-full" style="width: 70%"></div>
+                                    </div>
+                                    <div class="flex justify-between text-xs text-gray-400 mt-1">
+                                        <span>Fridays</span>
+                                        <span>Thursdays</span>
+                                    </div>
+                                    <div class="mt-3 text-xs text-gray-500">
+                                        <i class="fas fa-check-circle text-green-500 mr-1"></i>
+                                        You voted for: Fridays
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resources Section -->
+            <div id="resources-section" class="hidden flex-1 bg-gradient-to-b from-gray-900 to-gray-800 p-6">
+                <div class="max-w-7xl mx-auto">
+                    <h1 class="text-3xl font-bold text-white mb-2">Learning Resources</h1>
+                    <p class="text-gray-400 mb-8">Access tutorials, documentation, and study materials</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="resource-card bg-gray-800 rounded-xl border border-gray-700 hover:border-purple-500 transition-all duration-300 overflow-hidden">
+                            <div class="h-40 bg-gradient-to-r from-purple-900 to-blue-900 flex items-center justify-center">
+                                <i class="fas fa-code text-white text-5xl"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-semibold text-white mb-2">Web Development</h3>
+                                <p class="text-gray-400 text-sm mb-4">HTML, CSS, JavaScript, React, Node.js</p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="px-2 py-1 bg-gray-700 text-xs text-gray-300 rounded">Beginner</span>
+                                    <span class="px-2 py-1 bg-gray-700 text-xs text-gray-300 rounded">Intermediate</span>
+                                    <span class="px-2 py-1 bg-gray-700 text-xs text-gray-300 rounded">Advanced</span>
+                                </div>
+                                <button class="w-full bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    Access Resources
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="resource-card bg-gray-800 rounded-xl border border-gray-700 hover:border-blue-500 transition-all duration-300 overflow-hidden">
+                            <div class="h-40 bg-gradient-to-r from-blue-900 to-teal-900 flex items-center justify-center">
+                                <i class="fas fa-mobile-alt text-white text-5xl"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-semibold text-white mb-2">Mobile Development</h3>
+                                <p class="text-gray-400 text-sm mb-4">Flutter, React Native, Swift, Kotlin</p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="px-2 py-1 bg-gray-700 text-xs text-gray-300 rounded">Beginner</span>
+                                    <span class="px-2 py-1 bg-gray-700 text-xs text-gray-300 rounded">Intermediate</span>
+                                </div>
+                                <button class="w-full bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    Access Resources
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="resource-card bg-gray-800 rounded-xl border border-gray-700 hover:border-green-500 transition-all duration-300 overflow-hidden">
+                            <div class="h-40 bg-gradient-to-r from-green-900 to-emerald-900 flex items-center justify-center">
+                                <i class="fas fa-brain text-white text-5xl"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-semibold text-white mb-2">Machine Learning</h3>
+                                <p class="text-gray-400 text-sm mb-4">Python, TensorFlow, PyTorch, Scikit-learn</p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="px-2 py-1 bg-gray-700 text-xs text-gray-300 rounded">Intermediate</span>
+                                    <span class="px-2 py-1 bg-gray-700 text-xs text-gray-300 rounded">Advanced</span>
+                                </div>
+                                <button class="w-full bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    Access Resources
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="resource-card bg-gray-800 rounded-xl border border-gray-700 hover:border-red-500 transition-all duration-300 overflow-hidden">
+                            <div class="h-40 bg-gradient-to-r from-red-900 to-pink-900 flex items-center justify-center">
+                                <i class="fas fa-shield-alt text-white text-5xl"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-semibold text-white mb-2">Cybersecurity</h3>
+                                <p class="text-gray-400 text-sm mb-4">Ethical Hacking, Network Security, Cryptography</p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="px-2 py-1 bg-gray-700 text-xs text-gray-300 rounded">Beginner</span>
+                                    <span class="px-2 py-1 bg-gray-700 text-xs text-gray-300 rounded">Intermediate</span>
+                                </div>
+                                <button class="w-full bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    Access Resources
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="resource-card bg-gray-800 rounded-xl border border-gray-700 hover:border-yellow-500 transition-all duration-300 overflow-hidden">
+                            <div class="h-40 bg-gradient-to-r from-yellow-900 to-amber-900 flex items-center justify-center">
+                                <i class="fas fa-database text-white text-5xl"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-semibold text-white mb-2">Database Systems</h3>
+                                <p class="text-gray-400 text-sm mb-4">SQL, MongoDB, Firebase, PostgreSQL</p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="px-2 py-1 bg-gray-700 text-xs text-gray-300 rounded">Beginner</span>
+                                    <span class="px-2 py-1 bg-gray-700 text-xs text-gray-300 rounded">Intermediate</span>
+                                </div>
+                                <button class="w-full bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    Access Resources
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="resource-card bg-gray-800 rounded-xl border border-gray-700 hover:border-indigo-500 transition-all duration-300 overflow-hidden">
+                            <div class="h-40 bg-gradient-to-r from-indigo-900 to-purple-900 flex items-center justify-center">
+                                <i class="fas fa-gamepad text-white text-5xl"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-semibold text-white mb-2">Game Development</h3>
+                                <p class="text-gray-400 text-sm mb-4">Unity, Unreal Engine, Godot</p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="px-2 py-1 bg-gray-700 text-xs text-gray-300 rounded">Beginner</span>
+                                </div>
+                                <button class="w-full bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    Access Resources
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Members Section -->
+            <div id="members-section" class="hidden flex-1 bg-gradient-to-b from-gray-900 to-gray-800 p-6">
+                <div class="max-w-7xl mx-auto">
+                    <h1 class="text-3xl font-bold text-white mb-2">Club Members</h1>
+                    <p class="text-gray-400 mb-8">Connect with fellow ICT Club members</p>
+
+                    <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div class="relative w-full sm:w-64">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </div>
+                            <input type="text" id="member-search" placeholder="Search members..." 
+                                   class="w-full pl-10 pr-4 py-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 border border-gray-600 focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        </div>
+                        <div class="flex space-x-2 w-full sm:w-auto">
+                            <select id="member-filter" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2">
+                                <option selected>All Members</option>
+                                <option>Committee</option>
+                                <option>Active</option>
+                                <option>Web Dev</option>
+                                <option>Mobile Dev</option>
+                                <option>Data Science</option>
+                            </select>
+                            <button class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors border border-gray-600">
+                                <i class="fas fa-filter"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        <div class="member-card bg-gray-800 rounded-xl border border-gray-700 hover:border-purple-500 transition-all duration-300 p-6">
+                            <div class="flex flex-col items-center">
+                                <div class="h-20 w-20 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mb-4">
+                                    <i class="fas fa-user text-white text-2xl"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-white">Alex Johnson</h3>
+                                <p class="text-purple-400 text-sm mb-2">President</p>
+                                <p class="text-gray-400 text-xs text-center mb-3">Computer Science, 4th Year</p>
+                                <div class="flex space-x-2">
+                                    <span class="px-2 py-1 bg-gray-700 text-xs text-gray-300 rounded-full">Web Dev</span>
+                                    <span class="px-2 py-1 bg-gray-700 text-xs text-gray-300 rounded-full">Python</span>
+                                </div>
+                                <div class="mt-4 flex space-x-3">
+                                    <a href="#" class="text-gray-400 hover:text-blue-400"><i class="fab fa-linkedin"></i></a>
+                                    <a href="#" class="text-gray-400 hover:text-purple-400"><i class="fab fa-github"></i></a>
+                                    <a href="#" class="text-gray-400 hover:text-blue-500"><i class="fab fa-twitter"></i></a>
+                                </div>
+                                <button class="mt-4 w-full bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    Message
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="member-card bg-gray-800 rounded-xl border border-gray-700 hover:border-blue-500 transition-all duration-300 p-6">
+                            <div class="flex flex-col items-center">
+                                <div class="h-20 w-20 rounded-full bg-gradient-to-br from-blue-500 to-teal-500 flex items-center justify-center mb-4">
+                                    <i class="fas fa-user text-white text-2xl"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-white">Maria Garcia</h3>
+                                <p class="text-blue-400 text-sm mb-2">Mobile Team Lead</p>
+                                <p class="text-gray-400 text-xs text-center mb-3">Software Engineering, 3rd Year</p>
+                                <div class="flex space-x-2">
+                                    <span class="px-2 py-1 bg-gray-700 text-xs text-gray-300 rounded-full">Flutter</span>
+                                    <span class="px-2 py-1 bg-gray-700 text-xs text-gray-300 rounded-full">Firebase</span>
+                                </div>
+                                <div class="mt-4 flex space-x-3">
+                                    <a href="#" class="text-gray-400 hover:text-blue-400"><i class="fab fa-linkedin"></i></a>
+                                    <a href="#" class="text-gray-400 hover:text-purple-400"><i class="fab fa-github"></i></a>
+                                </div>
+                                <button class="mt-4 w-full bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    Message
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="member-card bg-gray-800 rounded-xl border border-gray-700 hover:border-green-500 transition-all duration-300 p-6">
+                            <div class="flex flex-col items-center">
+                                <div class="h-20 w-20 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center mb-4">
+                                    <i class="fas fa-user text-white text-2xl"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-white">Sam Wilson</h3>
+                                <p class="text-green-400 text-sm mb-2">Data Science Lead</p>
+                                <p class="text-gray-400 text-xs text-center mb-3">AI & Data Science, 2nd Year</p>
+                                <div class="flex space-x-2">
+                                    <span class="px-2 py-1 bg-gray-700 text-xs text-gray-300 rounded-full">Python</span>
+                                    <span class="px-2 py-1 bg-gray-700 text-xs text-gray-300 rounded-full">TensorFlow</span>
+                                    <span class="px-2 py-1 bg-gray-700 text-xs text-gray-300 rounded-full">SQL</span>
+                                </div>
+                                <div class="mt-4 flex space-x-3">
+                                    <a href="#" class="text-gray-400 hover:text-blue-400"><i class="fab fa-linkedin"></i></a>
+                                    <a href="#" class="text-gray-400 hover:text-purple-400"><i class="fab fa-github"></i></a>
+                                </div>
+                                <button class="mt-4 w-full bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    Message
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="member-card bg-gray-800 rounded-xl border border-gray-700 hover:border-red-500 transition-all duration-300 p-6">
+                            <div class="flex flex-col items-center">
+                                <div class
+</body>
+</html>
