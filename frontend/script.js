@@ -48,3 +48,19 @@ function showMessage(text, type = 'success') {
   msg.classList.remove('hidden');
   setTimeout(() => msg.classList.add('hidden'), 3000);
 }
+function submitVote(pollName) {
+  const selected = document.querySelector(`input[name="${pollName}"]:checked`);
+  const campusId = document.getElementById(`campus-id${pollName === 'workshop' ? '2' : ''}`).value;
+
+  if (!selected) {
+    alert('Please select an option');
+    return;
+  }
+  if (!campusId) {
+    alert('Please enter your Campus ID');
+    return;
+  }
+
+  // Simulate success
+  alert(`Thank you! Your vote for "${selected.parentElement.textContent.trim()}" has been recorded.`);
+}
