@@ -380,6 +380,10 @@
                                 <div class="border border-gray-700 rounded-lg p-4">
                                     <div class="flex items-center justify-between mb-2">
                                         <h4 class="font-medium text-white">Next Club President Election</h4>
+<button onclick="submitVote('president')"
+        class="mt-4 w-full bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300">
+  Submit Vote
+</button>
                                         <span class="text-xs bg-purple-900 text-purple-200 px-2 py-1 rounded-full">3 days left</span>
                                     </div>
                                     <p class="text-sm text-gray-400 mb-3">Vote for your preferred candidate</p>
@@ -641,5 +645,98 @@
             document.getElementById('sidebar').classList.toggle('-translate-x-full');
         });
     <script src="script.js"></script>
+<script>
+  // ====== Show Section ======
+  function showSection(id) {
+    // Hide all sections
+    document.querySelectorAll('.flex-1 > div[id$="-section"]').forEach(el => {
+      el.classList.add('hidden');
+    });
+    // Show the selected one
+    document.getElementById(id).classList.remove('hidden');
+    // Update page title
+    document.getElementById('page-title').innerText = id.replace('-section', '').replace(/^\w/, c => c.toUpperCase());
+  }
+
+  // ====== Login Function ======
+  function login() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const message = document.getElementById('message');
+
+    if (!email || !password) {
+      message.classList.remove('hidden');
+      message.innerText = 'Please enter both email and password';
+      message.className = 'bg-red-500 text-white p-2 rounded mt-4';
+      return;
+    }
+
+    // For demo: Accept any non-empty login
+    localStorage.setItem('user', JSON.stringify({ name: 'Member' }));
+    document.getElementById('login-container').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('hidden');
+    document.getElementById('user-name').innerText = 'Member';
+    document.getElementById('user-greeting').innerText = 'Member';
+    showSection('dashboard-content');
+  }
+
+  // ====== Logout Function ======
+  function logout() {
+    localStorage.removeItem('user');
+    document.getElementById('dashboard').classList.add('hidden');
+    document.getElementById('login-container').classList.remove('hidden');
+  }
+
+  // ====== Mobile Menu Toggle ======
+  document.getElementById('mobile-menu-button').addEventListener('click', function () {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('-translate-x-full');
+  });
+
+  // ====== On Load: Check if user is logged in ======
+  window.onload = function () {
+    const user = localStorage.getItem('user');
+    if (user) {
+      document.getElementById('login-container').classList.add('hidden');
+      document.getElementById('dashboard').classList.remove('hidden');
+      const userData = JSON.parse(user);
+      document.getElementById('user-name').innerText = userData.name;
+      document.getElementById('user-greeting').innerText = userData.name;
+    }
+    // Hide loading screen
+    setTimeout(() => {
+      document.getElementById('loading-screen').classList.add('hidden');
+    }, 1000);
+  };
+
+  // ====== Password Toggle ======
+  document.getElementById('toggle-password').addEventListener('click', function () {
+    const pwd = document.getElementById('password');
+    const icon = this.querySelector('i');
+    pwd.type = pwd.type === 'password' ? 'text' : 'password';
+    icon.classList.toggle('fa-eye');
+    icon.classList.toggle('fa-eye-slash');
+  });
+
+  // ====== Password Strength Meter ======
+  document.getElementById('password').addEventListener('input', function () {
+    const pwd = this.value;
+    let strength = 0;
+    if (pwd.length >= 8) strength++;
+    if (pwd.match(/[a-z]/)) strength++;
+    if (pwd.match(/[A-Z]/)) strength++;
+    if (pwd.match(/[0-9]/)) strength++;
+    if (pwd.match(/[^A-Za-z0-9]/)) strength++;
+
+    const colors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-400', 'bg-green-500', 'bg-green-600'];
+    const texts = ['Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
+    const fill = document.getElementById('strength-fill');
+    const strengthText = document.getElementById('strength-text');
+    fill.className = `h-2 rounded-full transition-all duration-300 ${colors[strength]}`;
+    fill.style.width = `${strength * 25}%`;
+    strengthText.innerText = texts[strength];
+    strengthText.className = `text-xs ${colors[strength].replace('bg-', 'text-')}`;
+  });
+</script>
 </body>
 </html>
