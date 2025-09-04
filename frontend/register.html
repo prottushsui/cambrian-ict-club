@@ -6,28 +6,7 @@
     <title>Register - Cambrian ICT Club</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        .animate-pulse-custom {
-            animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        .gradient-text {
-            background: linear-gradient(90deg, #8b5cf6, #ec4899);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-        .smooth-transition {
-            transition: all 0.3s ease-in-out;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen font-sans flex items-center justify-center p-4">
     <div class="bg-gray-800 p-8 rounded-xl shadow-2xl w-full max-w-md border border-gray-700">
@@ -92,8 +71,7 @@
                     <div id="strength-fill" class="h-2 rounded-full w-0 transition-all duration-300"></div>
                 </div>
             </div>
-            <button type="submit"
-                    class="w-full bg-gradient-to-r from-green-600 to-blue-500 hover:from-green-700 hover:to-blue-600 text-white px-4 py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-[1.02]">
+            <button type="submit" class="w-full btn-primary">
                 Create Account
             </button>
         </form>
@@ -105,85 +83,6 @@
         </div>
     </div>
 
-    <!-- Shared JavaScript -->
     <script src="script.js"></script>
-
-    <!-- Inline Registration Script -->
-    <script>
-        // Password toggle
-        document.getElementById('toggle-password').addEventListener('click', function () {
-            const pwd = document.getElementById('password');
-            const icon = this.querySelector('i');
-            pwd.type = pwd.type === 'password' ? 'text' : 'password';
-            icon.classList.toggle('fa-eye');
-            icon.classList.toggle('fa-eye-slash');
-        });
-
-        // Password strength meter
-        document.getElementById('password').addEventListener('input', function () {
-            const pwd = this.value;
-            let strength = 0;
-            if (pwd.length >= 8) strength++;
-            if (pwd.match(/[a-z]/)) strength++;
-            if (pwd.match(/[A-Z]/)) strength++;
-            if (pwd.match(/[0-9]/)) strength++;
-            if (pwd.match(/[^A-Za-z0-9]/)) strength++;
-
-            const colors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-400', 'bg-green-500', 'bg-green-600'];
-            const texts = ['Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
-            const fill = document.getElementById('strength-fill');
-            const strengthText = document.getElementById('strength-text');
-            fill.className = `h-2 rounded-full transition-all duration-300 ${colors[strength]}`;
-            fill.style.width = `${strength * 25}%`;
-            strengthText.innerText = texts[strength];
-            strengthText.className = `text-xs ${colors[strength].replace('bg-', 'text-')}`;
-        });
-
-        // Handle registration
-        document.getElementById('register-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const campusId = document.getElementById('campus-id').value;
-            const password = document.getElementById('password').value;
-            const messageEl = document.getElementById('message');
-
-            // Validate email domain
-            if (!email.endsWith('@cambrian.edu')) {
-                showMessage('Only Cambrian College emails are allowed', 'error');
-                return;
-            }
-
-            try {
-                const res = await fetch('http://localhost:5000/api/auth/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, password, campusId })
-                });
-
-                const data = await res.json();
-
-                if (res.ok) {
-                    showMessage('Registration successful! Redirecting to login...', 'success');
-                    setTimeout(() => {
-                        window.location.href = 'index.html';
-                    }, 1500);
-                } else {
-                    showMessage(data.message || 'Registration failed', 'error');
-                }
-            } catch (err) {
-                showMessage('Network error. Please try again.', 'error');
-            }
-        });
-
-        function showMessage(text, type = 'success') {
-            const msg = document.getElementById('message');
-            msg.innerText = text;
-            msg.className = `mt-4 text-center p-2 rounded ${
-                type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-            }`;
-            msg.classList.remove('hidden');
-        }
-    </script>
 </body>
 </html>
