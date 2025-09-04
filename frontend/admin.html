@@ -1,1 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard - ICT Club</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+  <div class="flex">
+    <aside class="w-64 bg-gray-800 h-screen p-4">
+      <h2 class="text-2xl font-bold mb-8">Admin Panel</h2>
+      <nav class="space-y-2">
+        <a href="#" class="block p-2 rounded bg-purple-600"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <a href="#" class="block p-2 rounded hover:bg-gray-700"><i class="fas fa-users"></i> Manage Users</a>
+        <a href="#" class="block p-2 rounded hover:bg-gray-700"><i class="fas fa-envelope"></i> Announcements</a>
+        <a href="/logout" class="block p-2 rounded hover:bg-red-900"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </nav>
+    </aside>
+    <main class="flex-1 p-6">
+      <header class="mb-8">
+        <h1 class="text-3xl font-bold">Admin Dashboard</h1>
+      </header>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-gray-800 p-6 rounded-lg text-center">
+          <i class="fas fa-users text-4xl text-blue-500 mb-2"></i>
+          <h2 class="text-xl">Total Members</h2>
+          <p id="total-users" class="text-2xl font-bold">0</p>
+        </div>
+        <div class="bg-gray-800 p-6 rounded-lg text-center">
+          <i class="fas fa-calendar-alt text-4xl text-green-500 mb-2"></i>
+          <h2 class="text-xl">Events</h2>
+          <p id="total-events" class="text-2xl font-bold">0</p>
+        </div>
+        <div class="bg-gray-800 p-6 rounded-lg text-center">
+          <i class="fas fa-poll text-4xl text-yellow-500 mb-2"></i>
+          <h2 class="text-xl">Active Votes</h2>
+          <p id="total-votes" class="text-2xl font-bold">0</p>
+        </div>
+      </div>
+      <div class="bg-gray-800 p-6 rounded-lg">
+        <h2 class="text-2xl font-semibold mb-4">User Management</h2>
+        <table class="w-full text-left">
+          <thead>
+            <tr class="border-b border-gray-700">
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="users-table-body">
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+  <script>
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'index.html';
 
+    fetch('http://localhost:5000/api/admin/stats', {
+      headers: { 'x-auth-token': token }
+    }).then(r => r.json()).then(data => {
+      document.getElementById('total-users').innerText = data.users;
+      document.getElementById('total-events').innerText = data.events;
+      document.getElementById('total-votes').innerText = data.votes;
+    });
+
+    fetch('http://localhost:5000/api/admin/users', {
+      headers: { 'x-auth-token': token }
+    }).then(r => r.json()).then(users => {
+      const tbody = document.getElementById('users-table-body');
+      tbody.innerHTML = users.map(u => `
+        <tr class="border-b border-gray-700">
+          <td>${u.name}</td>
+          <td>${u.email}</td>
+          <td>${u.role}</td>
+          <td><button class="text-red-500">Delete</button></td>
+        </tr>
+      `).join('');
+    });
+  </script>
+<script src="script.js"></script>
+</body>
+</html>
