@@ -4,14 +4,20 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { sendPasswordResetEmail } = require('../utils/mailer');
 
+// POST /api/auth/login
 exports.login = async (req, res) => {
   const { email, password } = req.body;
+
   try {
     const user = await User.findOne({ email });
-    if (!user) return res.status(401).json({ message: 'Invalid credentials' });
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
 
     const token = jwt.sign(
       { id: user._id, email: user.email, role: user.role },
@@ -32,38 +38,57 @@ exports.login = async (req, res) => {
       },
     });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: 'Server error' });
   }
 };
 
+// POST /api/auth/register
 exports.register = async (req, res) => {
   const { name, email, password, campusId } = req.body;
 
   try {
+    // Only allow Cambrian emails
     if (!email.endsWith('@cambrian.edu')) {
-      return res.status(400).json({ message: 'Only Cambrian College emails allowed' });
+      return res.status(400).json({ message: 'Only Cambrian College emails are allowed' });
     }
 
+    // Check for existing user
     const existing = await User.findOne({ $or: [{ email }, { campusId }] });
     if (existing) {
       return res.status(400).json({ message: 'Email or Campus ID already exists' });
     }
 
+    // Hash password
     const hashed = await bcrypt.hash(password, 10);
-    const user = new User({ name, email, password: hashed, campusId });
+
+    // Create new user
+    const user = new User({
+      name,
+      email,
+      password: hashed,
+      campusId,
+      role: 'Member',
+    });
 
     await user.save();
-    res.status(201).json({ message: 'Registration successful!' });
+
+    res.status(201).json({ message: 'Registration successful! You can now log in.' });
   } catch (err) {
-    res.status(500).json({ message: 'Registration failed' });
+    console.error(err);
+    res.status(500).json({ message: 'Registration failed. Please try again.' });
   }
 };
 
+// POST /api/auth/forgot-password
 exports.forgotPassword = async (req, res) => {
   const { email } = req.body;
+
   try {
     const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
     await ResetToken.create({ userId: user._id, token });
@@ -71,12 +96,15 @@ exports.forgotPassword = async (req, res) => {
     await sendPasswordResetEmail(email, token);
     res.json({ message: 'Password reset link sent to your email.' });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: 'Server error' });
   }
 };
 
+// POST /api/auth/reset-password
 exports.resetPassword = async (req, res) => {
   const { token, newPassword } = req.body;
+
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const resetDoc = await ResetToken.findOne({ token, userId: decoded.id });
