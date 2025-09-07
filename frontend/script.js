@@ -27,12 +27,10 @@ document.addEventListener('DOMContentLoaded', function () {
       const texts = ['Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
       const fill = document.getElementById('strength-fill');
       const strengthText = document.getElementById('strength-text');
-      if (fill && strengthText) {
-        fill.className = `h-2 rounded-full transition-all duration-300 ${colors[strength]}`;
-        fill.style.width = `${strength * 25}%`;
-        strengthText.innerText = texts[strength];
-        strengthText.className = `text-xs ${colors[strength].replace('bg-', 'text-')}`;
-      }
+      fill.className = `h-2 rounded-full transition-all duration-300 ${colors[strength]}`;
+      fill.style.width = `${strength * 25}%`;
+      strengthText.innerText = texts[strength];
+      strengthText.className = `text-xs ${colors[strength].replace('bg-', 'text-')}`;
     });
   }
 });
@@ -93,7 +91,23 @@ function showDashboard(user) {
   document.getElementById('dashboard').classList.remove('hidden');
   document.getElementById('user-name').innerText = user.name;
   document.getElementById('user-greeting').innerText = user.name;
+  updateProfile(user);
   showSection('dashboard-content');
+}
+
+// ====== Update Profile with User Data ======
+function updateProfile(user) {
+  const fields = ['profile-name', 'profile-full-name', 'profile-email'];
+  fields.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = user.name || 'Member';
+  });
+
+  const roleEl = document.getElementById('profile-role');
+  if (roleEl) roleEl.innerText = user.role || 'Member';
+
+  const campusEl = document.getElementById('profile-campus-id');
+  if (campusEl) campusEl.innerText = user.campusId || 'Not set';
 }
 
 // ====== Logout Function ======
@@ -114,6 +128,47 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 });
+
+// ====== Toggle Theme (Dark/Light Mode) ======
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.classList.contains('light');
+  
+  if (isDark) {
+    html.classList.remove('light');
+    localStorage.setItem('theme', 'dark');
+  } else {
+    html.classList.add('light');
+    localStorage.setItem('theme', 'light');
+  }
+}
+
+// ====== On Page Load ======
+window.onload = function () {
+  // Apply saved theme
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  if (savedTheme === 'light') {
+    document.documentElement.classList.add('light');
+  }
+
+  // Check if user is logged in
+  const user = localStorage.getItem('user');
+  if (user) {
+    document.getElementById('login-container').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('hidden');
+    const userData = JSON.parse(user);
+    document.getElementById('user-name').innerText = userData.name;
+    document.getElementById('user-greeting').innerText = userData.name;
+    updateProfile(userData);
+    showSection('dashboard-content');
+  }
+
+  // Hide loading screen
+  setTimeout(() => {
+    const loading = document.getElementById('loading-screen');
+    if (loading) loading.classList.add('hidden');
+  }, 1000);
+};
 
 // ====== Submit Vote Function ======
 async function submitVote(pollName) {
@@ -152,22 +207,3 @@ async function submitVote(pollName) {
     alert('Network error. Please try again.');
   }
 }
-
-// ====== On Page Load ======
-window.onload = function () {
-  const user = localStorage.getItem('user');
-  if (user) {
-    document.getElementById('login-container').classList.add('hidden');
-    document.getElementById('dashboard').classList.remove('hidden');
-    const userData = JSON.parse(user);
-    document.getElementById('user-name').innerText = userData.name;
-    document.getElementById('user-greeting').innerText = userData.name;
-    showSection('dashboard-content');
-  }
-
-  // Hide loading screen
-  setTimeout(() => {
-    const loading = document.getElementById('loading-screen');
-    if (loading) loading.classList.add('hidden');
-  }, 1000);
-};
