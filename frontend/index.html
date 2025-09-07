@@ -59,7 +59,6 @@
             <h2 class="text-3xl font-bold text-center mb-2 gradient-text">Cambrian ICT Club</h2>
             <p class="text-gray-400 text-center mb-8">Sign in to access the club portal</p>
             <div id="message" class="hidden mb-4 p-2 rounded"></div>
-
             <form id="login-form" class="space-y-4">
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-300 mb-2">College Email</label>
@@ -89,7 +88,7 @@
                         <input type="checkbox" id="remember-me" class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-600 rounded bg-gray-700">
                         <label for="remember-me" class="ml-2 block text-sm text-gray-300">Remember me</label>
                     </div>
-                    <a href="#" class="text-sm text-purple-400 hover:text-purple-300">Forgot password?</a>
+                    <a href="reset-password.html" class="text-sm text-purple-400 hover:text-purple-300">Forgot password?</a>
                 </div>
                 <div class="pt-2">
                     <div class="flex justify-between text-xs text-gray-400 mb-1">
@@ -100,63 +99,12 @@
                         <div id="strength-fill" class="h-2 rounded-full w-0 transition-all duration-300"></div>
                     </div>
                 </div>
-                <button type="button" onclick="login()" class="w-full bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white px-4 py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-[1.02]">
+                <button type="button" onclick="login()" class="w-full btn-primary">
                     Sign In
                 </button>
             </form>
             <div class="mt-6 text-center text-sm text-gray-400">
                 New to ICT Club? <a href="register.html" class="text-purple-400 hover:text-purple-300 font-medium">Register here</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Registration Modal -->
-    <div id="register-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-gray-800 p-8 rounded-xl w-full max-w-md mx-4 border border-gray-700">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold gradient-text">Create Account</h2>
-                <button onclick="closeRegisterModal()" class="text-gray-400 hover:text-white">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <form id="register-form" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Full Name</label>
-                    <input type="text" id="register-name" required
-                           class="w-full px-4 py-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:ring-2 focus:ring-purple-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">College Email</label>
-                    <input type="email" id="register-email" placeholder="student@cambrian.edu" required
-                           class="w-full px-4 py-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:ring-2 focus:ring-purple-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Campus ID</label>
-                    <input type="text" id="register-campus-id" placeholder="CJ6E000 or CSSCE2025000" required
-                           class="w-full px-4 py-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:ring-2 focus:ring-purple-500">
-                    <p class="text-xs text-gray-500 mt-1">Format: CJ6E000 or CSSCE2025000</p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Password</label>
-                    <input type="password" id="register-password" required
-                           class="w-full px-4 py-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:ring-2 focus:ring-purple-500">
-                </div>
-                <div class="pt-2">
-                    <div class="flex justify-between text-xs text-gray-400 mb-1">
-                        <span>Password Strength</span>
-                        <span id="register-strength-text">Weak</span>
-                    </div>
-                    <div class="w-full bg-gray-700 h-2 rounded-full mb-4">
-                        <div id="register-strength-fill" class="h-2 rounded-full w-0 transition-all duration-300"></div>
-                    </div>
-                </div>
-                <button type="submit"
-                        class="w-full bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white px-4 py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-[1.02]">
-                    Register
-                </button>
-            </form>
-            <div class="mt-4 text-center text-sm text-gray-400">
-                Already have an account? <a href="#" onclick="closeRegisterModal(); return false;" class="text-purple-400">Sign In</a>
             </div>
         </div>
     </div>
@@ -215,6 +163,14 @@
                         <i class="fas fa-users mr-3 text-pink-400"></i>
                         Members
                     </a>
+                    <a href="#" onclick="showSection('profile-section')" class="nav-item flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-300 hover:text-white hover:bg-gray-700">
+                        <i class="fas fa-user-circle mr-3 text-indigo-400"></i>
+                        My Profile
+                    </a>
+                    <button onclick="toggleTheme()" class="w-full text-left px-4 py-2 text-sm text-gray-400 hover:text-white">
+                        <i class="fas fa-moon mr-3"></i>
+                        Toggle Theme
+                    </button>
                 </nav>
             </div>
             <div class="absolute bottom-0 w-full px-4 py-4 border-t border-gray-700">
@@ -251,7 +207,7 @@
                                 <h2 class="text-2xl font-bold text-white mb-2">Welcome back, <span id="user-greeting" class="gradient-text">Member</span>!</h2>
                                 <p class="text-gray-300">Check out the latest updates and activities from your ICT Club</p>
                             </div>
-                            <button class="bg-white bg-opacity-10 hover:bg-opacity-20 text-white px-6 py-2 rounded-lg font-medium transition-all duration-300 border border-white border-opacity-20">
+                            <button class="btn-outline">
                                 View Calendar
                             </button>
                         </div>
@@ -600,40 +556,6 @@
                                         Submit Vote
                                     </button>
                                 </div>
-                                <div class="border border-gray-700 rounded-lg p-4">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <h4 class="font-medium text-white">New Club T-Shirt Design</h4>
-                                        <span class="text-xs bg-green-900 text-green-200 px-2 py-1 rounded-full">Results</span>
-                                    </div>
-                                    <p class="text-sm text-gray-400 mb-3">Poll closed: Design B won with 55% of votes</p>
-                                    <div class="mt-3 w-full bg-gray-700 rounded-full h-2">
-                                        <div class="bg-blue-500 h-2 rounded-full" style="width: 55%"></div>
-                                    </div>
-                                    <div class="flex justify-between text-xs text-gray-400 mt-1">
-                                        <span>Design B</span>
-                                        <span>Design A</span>
-                                    </div>
-                                    <div class="mt-3 text-xs text-gray-500">
-                                        <i class="fas fa-check-circle text-green-500 mr-1"></i>You voted for: Design B
-                                    </div>
-                                </div>
-                                <div class="border border-gray-700 rounded-lg p-4">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <h4 class="font-medium text-white">Next Meeting Schedule</h4>
-                                        <span class="text-xs bg-yellow-900 text-yellow-200 px-2 py-1 rounded-full">Results</span>
-                                    </div>
-                                    <p class="text-sm text-gray-400 mb-3">Poll closed: Fridays won with 70% of votes</p>
-                                    <div class="mt-3 w-full bg-gray-700 rounded-full h-2">
-                                        <div class="bg-purple-500 h-2 rounded-full" style="width: 70%"></div>
-                                    </div>
-                                    <div class="flex justify-between text-xs text-gray-400 mt-1">
-                                        <span>Fridays</span>
-                                        <span>Thursdays</span>
-                                    </div>
-                                    <div class="mt-3 text-xs text-gray-500">
-                                        <i class="fas fa-check-circle text-green-500 mr-1"></i>You voted for: Fridays
-                                    </div>
-                                </div>
                             </div>
                         </div>
                         <div class="voting-card p-6 bg-gray-800 rounded-xl border border-gray-700">
@@ -942,221 +864,84 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Profile Section -->
+            <div id="profile-section" class="hidden flex-1 bg-gradient-to-b from-gray-900 to-gray-800 p-6">
+                <div class="max-w-3xl mx-auto">
+                    <h1 class="text-3xl font-bold text-white mb-2">My Profile</h1>
+                    <p class="text-gray-400 mb-8">Manage your account and preferences</p>
+
+                    <div class="bg-gray-800 rounded-xl p-6 border border-gray-700 mb-6">
+                        <div class="flex flex-col md:flex-row items-center gap-6">
+                            <div class="h-24 w-24 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+                                <i class="fas fa-user text-white text-4xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h2 class="text-2xl font-bold text-white" id="profile-name">John Doe</h2>
+                                <p class="text-purple-400" id="profile-role">Member</p>
+                                <p class="text-gray-400 text-sm" id="profile-email">john@cambrian.edu</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Personal Info -->
+                        <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                            <h3 class="text-xl font-semibold text-white mb-4">Personal Information</h3>
+                            <div class="space-y-4">
+                                <div class="flex justify-between py-2 border-b border-gray-700">
+                                    <span class="text-gray-400">Full Name</span>
+                                    <span class="text-white font-medium" id="profile-full-name">John Doe</span>
+                                </div>
+                                <div class="flex justify-between py-2 border-b border-gray-700">
+                                    <span class="text-gray-400">Campus ID</span>
+                                    <span class="text-white font-medium" id="profile-campus-id">CJ6E001</span>
+                                </div>
+                                <div class="flex justify-between py-2 border-b border-gray-700">
+                                    <span class="text-gray-400">Program</span>
+                                    <span class="text-white font-medium">Computer Science</span>
+                                </div>
+                                <div class="flex justify-between py-2">
+                                    <span class="text-gray-400">Join Date</span>
+                                    <span class="text-white font-medium">Jan 2023</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stats -->
+                        <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                            <h3 class="text-xl font-semibold text-white mb-4">Your Stats</h3>
+                            <div class="space-y-4">
+                                <div class="flex justify-between py-2 border-b border-gray-700">
+                                    <span class="text-gray-400">Events Attended</span>
+                                    <span class="text-white font-medium">8</span>
+                                </div>
+                                <div class="flex justify-between py-2 border-b border-gray-700">
+                                    <span class="text-gray-400">Votes Cast</span>
+                                    <span class="text-white font-medium">5</span>
+                                </div>
+                                <div class="flex justify-between py-2 border-b border-gray-700">
+                                    <span class="text-gray-400">Resources Downloaded</span>
+                                    <span class="text-white font-medium">12</span>
+                                </div>
+                                <div class="flex justify-between py-2">
+                                    <span class="text-gray-400">Account Status</span>
+                                    <span class="text-green-400 font-medium">Active</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex justify-end">
+                        <button class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+                            Edit Profile
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <script>
-        // Password Toggle
-        document.getElementById('toggle-password').addEventListener('click', function () {
-            const pwd = document.getElementById('password');
-            const icon = this.querySelector('i');
-            pwd.type = pwd.type === 'password' ? 'text' : 'password';
-            icon.classList.toggle('fa-eye');
-            icon.classList.toggle('fa-eye-slash');
-        });
-
-        // Password Strength Meter
-        function checkPasswordStrength(password) {
-            let strength = 0;
-            if (password.length >= 8) strength++;
-            if (password.match(/[a-z]/)) strength++;
-            if (password.match(/[A-Z]/)) strength++;
-            if (password.match(/[0-9]/)) strength++;
-            if (password.match(/[^A-Za-z0-9]/)) strength++;
-
-            const colors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-400', 'bg-green-500', 'bg-green-600'];
-            const texts = ['Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
-
-            return { width: `${strength * 25}%`, color: colors[strength], text: texts[strength] };
-        }
-
-        // Login Password Strength
-        document.getElementById('password').addEventListener('input', function () {
-            const pwd = this.value;
-            const { width, color, text } = checkPasswordStrength(pwd);
-            const fill = document.getElementById('strength-fill');
-            const strengthText = document.getElementById('strength-text');
-            fill.className = `h-2 rounded-full transition-all duration-300 ${color}`;
-            fill.style.width = width;
-            strengthText.innerText = text;
-            strengthText.className = `text-xs ${color.replace('bg-', 'text-')}`;
-        });
-
-        // Register Password Strength
-        document.getElementById('register-password').addEventListener('input', function () {
-            const pwd = this.value;
-            const { width, color, text } = checkPasswordStrength(pwd);
-            const fill = document.getElementById('register-strength-fill');
-            const strengthText = document.getElementById('register-strength-text');
-            fill.className = `h-2 rounded-full transition-all duration-300 ${color}`;
-            fill.style.width = width;
-            strengthText.innerText = text;
-            strengthText.className = `text-xs ${color.replace('bg-', 'text-')}`;
-        });
-
-        // Show Message
-        function showMessage(text, type = 'success') {
-            const msg = document.getElementById('message');
-            msg.innerText = text;
-            msg.className = `p-2 rounded mt-4 ${type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white`;
-            msg.classList.remove('hidden');
-            setTimeout(() => msg.classList.add('hidden'), 3000);
-        }
-
-        // Open/Close Register Modal
-        function openRegisterModal() {
-            document.getElementById('login-container').classList.add('hidden');
-            document.getElementById('register-modal').classList.remove('hidden');
-        }
-
-        function closeRegisterModal() {
-            document.getElementById('register-modal').classList.add('hidden');
-            document.getElementById('login-container').classList.remove('hidden');
-        }
-
-        // Handle Registration
-        document.getElementById('register-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const name = document.getElementById('register-name').value;
-            const email = document.getElementById('register-email').value;
-            const campusId = document.getElementById('register-campus-id').value;
-            const password = document.getElementById('register-password').value;
-
-            try {
-                const res = await fetch('http://localhost:5000/api/auth/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, password, campusId }),
-                });
-
-                const data = await res.json();
-
-                if (res.ok) {
-                    showMessage('Registration successful! You can now log in.', 'success');
-                    setTimeout(() => closeRegisterModal(), 1500);
-                } else {
-                    showMessage(data.message, 'error');
-                }
-            } catch (err) {
-                showMessage('Network error. Please try again.', 'error');
-            }
-        });
-
-        // Login Function
-        async function login() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const message = document.getElementById('message');
-
-            try {
-                const res = await fetch('http://localhost:5000/api/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password }),
-                });
-
-                const data = await res.json();
-
-                if (res.ok) {
-                    localStorage.setItem('token', data.token);
-                    localStorage.setItem('user', JSON.stringify(data.user));
-                    showDashboard(data.user);
-                } else {
-                    message.classList.remove('hidden');
-                    message.className = 'bg-red-500 text-white p-2 rounded mt-4';
-                    message.innerText = data.message || 'Login failed';
-                }
-            } catch (err) {
-                message.classList.remove('hidden');
-                message.className = 'bg-red-500 text-white p-2 rounded mt-4';
-                message.innerText = 'Network error';
-            }
-        }
-
-        // Submit Vote
-        async function submitVote(pollName) {
-            const selected = document.querySelector(`input[name="${pollName}"]:checked`);
-            const campusIdInput = document.getElementById('campus-id');
-            const campusId = campusIdInput?.value.trim();
-
-            if (!selected) {
-                showMessage('Please select an option', 'error');
-                return;
-            }
-            if (!campusId) {
-                showMessage('Please enter your Campus ID', 'error');
-                return;
-            }
-
-            const payload = {
-                pollTitle: pollName,
-                optionIndex: selected.value
-            };
-
-            try {
-                const res = await fetch('http://localhost:5000/api/votes', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-auth-token': localStorage.getItem('token')
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                const data = await res.json();
-
-                if (res.ok) {
-                    showMessage('Vote submitted successfully!', 'success');
-                    setTimeout(() => location.reload(), 1500);
-                } else {
-                    showMessage(data.message, 'error');
-                }
-            } catch (err) {
-                showMessage('Network error. Please try again.', 'error');
-            }
-        }
-
-        // Show Dashboard
-        function showDashboard(user) {
-            document.getElementById('login-container').classList.add('hidden');
-            document.getElementById('dashboard').classList.remove('hidden');
-            document.getElementById('user-name').innerText = user.name;
-            document.getElementById('user-greeting').innerText = user.name;
-            document.getElementById('page-title').innerText = 'Dashboard';
-        }
-
-        // Show Section
-        function showSection(id) {
-            document.querySelectorAll('.flex-1 > div[id$="-section"]').forEach(el => {
-                el.classList.add('hidden');
-            });
-            document.getElementById(id).classList.remove('hidden');
-            document.getElementById('page-title').innerText = id.replace('-section', '').replace(/^\w/, c => c.toUpperCase());
-        }
-
-        // Logout
-        function logout() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            document.getElementById('dashboard').classList.add('hidden');
-            document.getElementById('login-container').classList.remove('hidden');
-        }
-
-        // On Load
-        window.onload = function () {
-            const token = localStorage.getItem('token');
-            const user = JSON.parse(localStorage.getItem('user'));
-            if (token && user) {
-                showDashboard(user);
-            }
-            setTimeout(() => document.getElementById('loading-screen').classList.add('hidden'), 1000);
-        };
-
-        // Mobile Menu Toggle
-        document.getElementById('mobile-menu-button').addEventListener('click', function () {
-            document.getElementById('sidebar').classList.toggle('translate-x-0');
-            document.getElementById('sidebar').classList.toggle('-translate-x-full');
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
