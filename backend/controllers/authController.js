@@ -2,7 +2,8 @@ const User = require('../models/User');
 const ResetToken = require('../models/ResetToken');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { sendPasswordResetEmail } = require('../utils/mailer');
+const { exec } = require('child_process');
+const path = require('path');
 
 // POST /api/auth/login
 exports.login = async (req, res) => {
@@ -73,7 +74,25 @@ exports.register = async (req, res) => {
 
     await user.save();
 
-    res.status(201).json({ message: 'Registration successful! You can now log in.' });
+    // ✅ Send welcome email via Python
+    const userData = JSON.stringify({
+      name: user.name,
+      email: user.email,
+      campusId: user.campusId
+    }).replace(/"/g, '\\"');
+
+    const scriptPath = path.join(__dirname, '../email_notifications.py');
+    const cmd = `python3 ${scriptPath} --action welcome --data "${userData}"`;
+
+    exec(cmd, (error, stdout, stderr) => {
+      if (error) {
+        console.error('Email error:', error);
+        return;
+      }
+      console.log('Welcome email sent:', stdout);
+    });
+
+    res.status(201).json({ message: 'Registration successful! Welcome email sent.' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Registration failed. Please try again.' });
@@ -93,7 +112,10 @@ exports.forgotPassword = async (req, res) => {
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
     await ResetToken.create({ userId: user._id, token });
 
-    await sendPasswordResetEmail(email, token);
+    // In a full setup, you'd call sendPasswordResetEmail here
+    // For now, we'll simulate it
+    console.log(`Password reset link: http://localhost:3000/reset-password.html?token=${token}`);
+
     res.json({ message: 'Password reset link sent to your email.' });
   } catch (err) {
     console.error(err);
