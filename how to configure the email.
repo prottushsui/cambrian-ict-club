@@ -1,0 +1,14 @@
+ Configure Gmail (Critical)
+To send emails from Python, you need:
+
+A Gmail account (e.g., ict-club@cambrian.edu)
+App Password (not your regular password)
+🔧 How to Get App Password:
+Go to https://myaccount.google.com
+Enable 2-Factor Authentication
+Go to: Security → App passwords
+Select "Mail" and "Other" → Name: "ICT Club Portal"
+Copy the 16-character app password
+Replace in email_notifications.py
+self.sender_email = "ict-club@cambrian.edu"  # Your Gmail
+self.password = "abcd efgh ijkl mnop"  # Your 16-char app password
