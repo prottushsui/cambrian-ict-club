@@ -10,12 +10,4 @@ A full-stack web portal for Cambrian College ICT Club with authentication, votin
 - 🐳 Docker Support
 - 🎨 Responsive UI with Tailwind CSS
 
-## Setup
-1. `cp backend/.env.example backend/.env` and fill in values
-2. `docker-compose up --build`
-
-## Environment
-- Use Gmail App Passwords for SMTP
-- Change JWT_SECRET to a strong random string
-
-Made with ❤️ for Cambrian ICT Club
+yall need to do alot for making this work all of direction is given in the comments and which things are need to be checked and done before launching this website.just need the approval ( some places are empty so fill the required place with relevent info or links .the comments are generated via ai and rechecked by me so it may contain some error )
