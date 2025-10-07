@@ -1,4 +1,4 @@
-// ====== Password Toggle (Login Page) ======
+// ====== Password Toggle (Login Page) ====== hey i don't really understand deez so check this plg 
 document.addEventListener('DOMContentLoaded', function () {
   const togglePassword = document.getElementById('toggle-password');
   if (togglePassword) {
